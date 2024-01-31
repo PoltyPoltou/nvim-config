@@ -5,7 +5,7 @@
 local map = vim.keymap.set
 -- local unmap = vim.keymap.del
 
-map("n", "<C-P>", "<cmd>Telescope find_files<cr>")
+map("n", "<C-P>", "<cmd>Telescope git_files<cr>", { remap = true })
 map("n", "<A-P>", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>")
 map({ "n", "t" }, "<Leader>t", "<cmd>ToggleTerm<cr>")
 map("n", "<F2>", vim.lsp.buf.rename)
