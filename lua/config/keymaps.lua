@@ -8,6 +8,7 @@ local map = vim.keymap.set
 map("n", "<C-P>", "<cmd>Telescope git_files<cr>", { remap = true })
 map("n", "<A-P>", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>")
 map({ "n", "t" }, "<Leader>t", "<cmd>ToggleTerm<cr>")
+map("i", "\b", "<C-O>dvb")
 map("n", "<F2>", vim.lsp.buf.rename)
 map("n", "<F11>", vim.lsp.buf.references)
 map("n", "<F12>", vim.lsp.buf.definition)
