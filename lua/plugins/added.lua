@@ -7,8 +7,8 @@ return {
       require("workspaces").setup({
         hooks = {
           open = function()
+            vim.cmd("%bwipeout")
             require("sessions").load(nil, { silent = true })
-            require("nvim-tree.api").tree.open()
           end,
         },
       })
@@ -22,9 +22,13 @@ return {
     "natecraddock/sessions.nvim",
     config = function()
       require("sessions").setup({
+        events = { "VimLeavePre" },
         session_filepath = vim.fn.stdpath("data") .. "/sessions",
         absolute = true,
       })
     end,
+    event = "DirChanged",
   },
+  -- interference with sessions
+  { "folke/persistence.nvim", enabled = false },
 }
