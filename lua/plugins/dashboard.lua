@@ -13,7 +13,7 @@ return {
     ]]
 
       logo = string.rep("\n", 8) .. logo .. "\n\n"
-      local last_pwd = vim.fn.readfile(vim.fn.stdpath("data") .. "/last_cwd", "", 1)[1]
+      local last_pwd = vim.g.LAST_CWD_USED
       local opts = {
         theme = "doom",
         hide = {

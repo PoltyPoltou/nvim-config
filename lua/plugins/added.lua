@@ -10,6 +10,9 @@ return {
             vim.cmd("%bwipeout")
             require("sessions").load(nil, { silent = true })
           end,
+          add = function()
+            require("sessions").save(nil, { silent = true })
+          end,
         },
       })
       require("telescope").load_extension("workspaces")

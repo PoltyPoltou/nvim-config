@@ -5,6 +5,6 @@
 -- Storing the last pwd before exiting vim
 vim.api.nvim_create_autocmd("VimLeavePre", {
   callback = function()
-    vim.fn.writefile({ vim.fn.getcwd() }, vim.fn.stdpath("data") .. "/last_cwd")
+    vim.g.LAST_CWD_USED = vim.fn.getcwd()
   end,
 })
