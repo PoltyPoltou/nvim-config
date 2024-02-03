@@ -8,10 +8,3 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
     vim.fn.writefile({ vim.fn.getcwd() }, vim.fn.stdpath("data") .. "/last_cwd")
   end,
 })
-
-vim.api.nvim_create_autocmd("DirChanged", {
-  pattern = "global",
-  callback = function()
-    require("sessions").load(nil, { silent = true })
-  end,
-})
