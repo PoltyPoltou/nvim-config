@@ -1,66 +1,67 @@
 return {
+  -- interference with sessions
+  { "folke/persistence.nvim", enabled = false },
+  {
+    "natecraddock/workspaces.nvim",
+    config = function()
+      require("workspaces").setup({
+        hooks = {
+          open = function()
+            vim.cmd("%bwipeout")
+            require("sessions").load(nil, { silent = true })
+          end,
+          add = function()
+            require("sessions").save(nil, { silent = true })
+          end,
+        },
+      })
+      require("telescope").load_extension("workspaces")
+    end,
+    keys = {
+      { "<Leader>fp", "<cmd>Telescope workspaces<CR>", desc = "workspaces" },
+    },
+  },
+  {
+    "natecraddock/sessions.nvim",
+    lazy = false,
+    config = function()
+      require("sessions").setup({
+        events = { "VimLeavePre" },
+        session_filepath = vim.fn.stdpath("data") .. "/sessions",
+        absolute = true,
+      })
+    end,
+  },
   {
     "nvimdev/dashboard-nvim",
-    event = "VimEnter",
-    opts = function()
-      local logo = [[
-         ██╗      █████╗ ███████╗██╗   ██╗██╗   ██╗██╗███╗   ███╗          Z
-         ██║     ██╔══██╗╚══███╔╝╚██╗ ██╔╝██║   ██║██║████╗ ████║      Z    
-         ██║     ███████║  ███╔╝  ╚████╔╝ ██║   ██║██║██╔████╔██║   z       
-         ██║     ██╔══██║ ███╔╝    ╚██╔╝  ╚██╗ ██╔╝██║██║╚██╔╝██║ z         
-         ███████╗██║  ██║███████╗   ██║    ╚████╔╝ ██║██║ ╚═╝ ██║           
-         ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝     ╚═══╝  ╚═╝╚═╝     ╚═╝           
-    ]]
-
-      logo = string.rep("\n", 8) .. logo .. "\n\n"
-      local last_pwd = vim.g.LAST_CWD_USED
-      local opts = {
-        theme = "doom",
-        hide = {
-          -- this is taken care of by lualine
-          -- enabling this messes up the actual laststatus setting after loading a file
-          statusline = false,
-        },
-        config = {
-          header = vim.split(logo, "\n"),
-        -- stylua: ignore
-        center = {
-          { action = "Telescope find_files",                                     desc = " Find file",       icon = " ", key = "f" },
-          { action = "Telescope workspaces",                                     desc = " Projects",        icon = " ", key = "p" },
-          { action = "ene | startinsert",                                        desc = " New file",        icon = " ", key = "n" },
-          { action = "Telescope oldfiles",                                       desc = " Recent files",    icon = " ", key = "r" },
-          { action = "Telescope live_grep",                                      desc = " Find text",       icon = " ", key = "g" },
-          { action = [[lua require("lazyvim.util").telescope.config_files()()]], desc = " Config",          icon = " ", key = "c" },
-          { action = "cd" .. last_pwd .. ' | lua require("sessions").load()',    desc = " Restore Session at " .. last_pwd, icon = " ", key = "s" },
-          { action = "LazyExtras",                                               desc = " Lazy Extras",     icon = " ", key = "x" },
-          { action = "Lazy",                                                     desc = " Lazy",            icon = "󰒲 ", key = "l" },
-          { action = "qa",                                                       desc = " Quit",            icon = " ", key = "q" },
-        },
-          footer = function()
-            local stats = require("lazy").stats()
-            local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-            return { "⚡ Neovim loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms .. "ms" }
-          end,
-        },
+    optional = true,
+    opts = function(_, opts)
+      local workspaces = {
+        action = "Telescope workspaces",
+        desc = " Projects",
+        icon = " ",
+        key = "p",
       }
-
-      for _, button in ipairs(opts.config.center) do
-        button.desc = button.desc .. string.rep(" ", 43 - #button.desc)
-        button.key_format = "  %s"
+      workspaces.desc = workspaces.desc .. string.rep(" ", 43 - #workspaces.desc)
+      table.insert(opts.config.center, 3, workspaces)
+    end,
+  },
+  {
+    "nvimdev/dashboard-nvim",
+    optional = true,
+    opts = function(_, opts)
+      table.remove(opts.config.center, 7)
+      local last_pwd = vim.g.LAST_CWD_USED
+      if last_pwd ~= "" then
+        local last_session = {
+          action = "cd" .. last_pwd .. ' | lua require("sessions").load()',
+          desc = " Restore Session at " .. last_pwd,
+          icon = " ",
+          key = "s",
+        }
+        last_session.desc = last_session.desc .. string.rep(" ", 43 - #last_session.desc)
+        table.insert(opts.config.center, 7, last_session)
       end
-
-      -- close Lazy and re-open when the dashboard is ready
-      if vim.o.filetype == "lazy" then
-        vim.cmd.close()
-        vim.api.nvim_create_autocmd("User", {
-          pattern = "DashboardLoaded",
-          callback = function()
-            require("lazy").show()
-          end,
-        })
-      end
-
-      return opts
     end,
   },
 }
