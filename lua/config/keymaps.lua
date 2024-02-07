@@ -7,7 +7,8 @@ local map = vim.keymap.set
 
 map("n", "<C-P>", "<cmd>Telescope git_files<cr>", { remap = true })
 map("n", "<A-P>", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>")
-map({ "n", "t" }, "<Leader>t", "<cmd>ToggleTerm<cr>")
+map("n", "<Leader>t", "<cmd>ToggleTerm<cr>")
+map("t", "<ESC><ESC>", "<cmd>ToggleTerm<cr>")
 -- for foot terminal and good behaved terminals
 map("i", "<C-BS>", "<C-O>dvb")
 -- default mapping of Konsole
