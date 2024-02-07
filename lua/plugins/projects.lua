@@ -30,6 +30,12 @@ return {
         session_filepath = vim.fn.stdpath("data") .. "/sessions",
         absolute = true,
       })
+      -- save the latest session too
+      vim.api.nvim_create_autocmd("VimLeavePre", {
+        callback = function()
+          require("sessions").save(vim.fn.stdpath("data") .. "/sessions/last.session", {})
+        end,
+      })
     end,
   },
   {
@@ -54,7 +60,7 @@ return {
       local last_pwd = vim.g.LAST_CWD_USED
       if last_pwd ~= "" then
         local last_session = {
-          action = "cd" .. last_pwd .. ' | lua require("sessions").load()',
+          action = "SessionsLoad " .. vim.fn.stdpath("data") .. "/sessions/last.session",
           desc = " Restore Session at " .. last_pwd,
           icon = " ",
           key = "s",
