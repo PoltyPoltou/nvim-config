@@ -47,6 +47,7 @@ return {
         desc = " Projects",
         icon = " ",
         key = "p",
+        key_format = "  %s",
       }
       workspaces.desc = workspaces.desc .. string.rep(" ", 43 - #workspaces.desc)
       table.insert(opts.config.center, 3, workspaces)
@@ -64,6 +65,7 @@ return {
           desc = " Restore Session at " .. last_pwd,
           icon = " ",
           key = "s",
+          key_format = "  %s",
         }
         last_session.desc = last_session.desc .. string.rep(" ", 43 - #last_session.desc)
         table.insert(opts.config.center, 7, last_session)
