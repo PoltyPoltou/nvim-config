@@ -1,6 +1,42 @@
+vim.api.nvim_create_autocmd({ "User" }, {
+  pattern = "SessionLoadPost",
+  callback = function()
+    require("neo-tree.command").execute({
+      action = "show", -- OPTIONAL, this is the default value
+      source = "filesystem", -- OPTIONAL, this is the default value
+    })
+  end,
+})
+
 return {
   -- interference with sessions
   { "folke/persistence.nvim", enabled = false },
+  {
+    "Shatur/neovim-session-manager",
+    lazy = false,
+
+    opts = {
+      autoload_mode = "Disabled",
+      autosave_last_session = true,
+      autosave_ignore_not_normal = true,
+      autosave_ignore_dirs = {},
+      autosave_ignore_filetypes = {
+        "gitcommit",
+        "gitrebase",
+      },
+      autosave_ignore_buftypes = {},
+      autosave_only_in_session = false,
+      max_path_length = 100,
+    },
+    keys = {
+      { "<Leader>qs", "<cmd>SessionManager load_session<CR>", desc = "Browse Sessions" },
+    },
+  },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    optional = true,
+    lazy = false,
+  },
   {
     "natecraddock/workspaces.nvim",
     config = function()
@@ -8,10 +44,10 @@ return {
         hooks = {
           open = function()
             vim.cmd("%bwipeout")
-            require("sessions").load(nil, { silent = true })
+            vim.cmd("SessionManager load_current_dir_session")
           end,
           add = function()
-            require("sessions").save(nil, { silent = true })
+            vim.cmd("SessionManager save_current_session")
           end,
         },
       })
@@ -20,23 +56,6 @@ return {
     keys = {
       { "<Leader>fp", "<cmd>Telescope workspaces<CR>", desc = "workspaces" },
     },
-  },
-  {
-    "natecraddock/sessions.nvim",
-    lazy = false,
-    config = function()
-      require("sessions").setup({
-        events = { "VimLeavePre" },
-        session_filepath = vim.fn.stdpath("data") .. "/sessions",
-        absolute = true,
-      })
-      -- save the latest session too
-      vim.api.nvim_create_autocmd("VimLeavePre", {
-        callback = function()
-          require("sessions").save(vim.fn.stdpath("data") .. "/sessions/last.session", {})
-        end,
-      })
-    end,
   },
   {
     "nvimdev/dashboard-nvim",
@@ -61,7 +80,7 @@ return {
       local last_pwd = vim.g.LAST_CWD_USED
       if last_pwd ~= "" then
         local last_session = {
-          action = "SessionsLoad " .. vim.fn.stdpath("data") .. "/sessions/last.session",
+          action = "SessionManager load_last_session",
           desc = " Restore Session at " .. last_pwd,
           icon = " ",
           key = "s",
